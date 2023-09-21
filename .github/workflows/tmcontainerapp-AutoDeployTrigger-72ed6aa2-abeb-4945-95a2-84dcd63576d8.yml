@@ -7,17 +7,15 @@ on:
     branches: 
       [ master ]
     paths:
-    - '//**'
+    - '**'
     - '.github/workflows/tmcontainerapp-AutoDeployTrigger-72ed6aa2-abeb-4945-95a2-84dcd63576d8.yml'
 
   # Allow manual trigger 
-  workflow_dispatch:      
-
+  workflow_dispatch:
+      
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions: 
-      id-token: write #This is required for requesting the OIDC JWT Token
 
     steps:
       - name: Checkout to the branch
@@ -26,9 +24,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.TMCONTAINERAPP_AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.TMCONTAINERAPP_AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.TMCONTAINERAPP_AZURE_SUBSCRIPTION_ID }}
+          creds: ${{ secrets.TMCONTAINERAPP_AZURE_CREDENTIALS }}
 
       - name: Build and push container image to registry
         uses: azure/container-apps-deploy-action@v1
@@ -40,6 +36,7 @@ jobs:
           containerAppName: tmcontainerapp
           resourceGroup: tmauldin-test
           imageToBuild: tmregtest.azurecr.io/tmcontainerapp:${{ github.sha }}
-          dockerfilePath: Dockerfile
+          
 
+     
 
